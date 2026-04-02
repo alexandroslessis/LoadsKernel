@@ -35,7 +35,7 @@ class ProgramFlowHelper():
         self.main = main  # True/False
         self.post = post  # True/False
         # debug options
-        self.debug = False  # True/False
+        self.log_level = logging.INFO # logging level
         # advanced options
         self.test = test  # True/False
         # job control options
@@ -48,7 +48,7 @@ class ProgramFlowHelper():
         self.setup_path()
         # Initialize MPI interface
         self.have_mpi, self.comm, self.status, self.myid = setup_mpi(
-            self.debug)
+            debug=True if self.log_level == logging.DEBUG else False)
         # Establish whether or not to use multiprocessing
         if self.have_mpi and self.comm.Get_size() > 1:
             self.use_multiprocessing = True
@@ -94,10 +94,7 @@ class ProgramFlowHelper():
         if logger.hasHandlers():
             logger.handlers.clear()
         # Set logging level.
-        if self.debug:
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
+        logger.setLevel(self.log_level)
         # Define a Handler which writes messages to a log file
         logfile = logging.FileHandler(filename, mode='a')
         logfile.set_name('lk_logfile')
